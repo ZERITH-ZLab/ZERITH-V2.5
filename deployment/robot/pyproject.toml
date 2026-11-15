@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zerith-h1"
+version = "0.1.0"
+description = "ZERITH 2.5 H1 SDK controller and native IK adapter"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+dependencies = ["zerith-client==0.1.0", "numpy>=1.26,<3", "scipy>=1.11,<2"]
+
+[project.scripts]
+zerith-h1 = "zerith.h1.runtime:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = true
+include = ["zerith*"]

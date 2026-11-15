@@ -1,0 +1,132 @@
+{
+  "format": "source-provenance-v1",
+  "files": [
+    {
+      "file": "inference/src/zerith_core/models/zerith/runtime.py",
+      "source_module": "zvla/models/fam_wam/runtime.py",
+      "source_sha256": "b83d8256975c16ed8d333afc78fef13b07a65a1ab3520d73afc30b8e6fc23e6d",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Model package and symbols renamed to ZERITH 2.5; legacy manifest metadata remains accepted. Corrected Command23 layout documentation: arms occupy the first twenty columns and waist commands the final three.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "93b98346c03f4df0fca7f485eab33bf759e951d8025e57d7db7f6a73183f0faf"
+    },
+    {
+      "file": "inference/src/zerith_core/models/zerith/config.py",
+      "source_module": "zvla/models/fam_wam/config.py",
+      "source_sha256": "a1f0030991bb6fc1ea621db2e1786d56759975c8c55b377b87573caf0f3b2618",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Model package and symbols renamed to ZERITH 2.5; legacy manifest metadata remains accepted.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "31f32c6cf7b15ea0c388f68827768eedab7bf5a7e109d29ce4b53b1be051853a"
+    },
+    {
+      "file": "inference/src/zerith_core/models/zerith/kv.py",
+      "source_module": "zvla/models/fam_wam/kv.py",
+      "source_sha256": "6b940e709b17fe29f8f2553c3daa71fbd0e53865221f4e7d7d75dbf4b794ece7",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Model package and symbols renamed to ZERITH 2.5; legacy manifest metadata remains accepted.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "f6781ed9eb5c8aeaeeac53f3c43b402846947a9c22b28110e8940506a445fb5e"
+    },
+    {
+      "file": "inference/src/zerith_core/models/zerith/geometry.py",
+      "source_module": "zvla/models/fam_wam/geometry.py",
+      "source_sha256": "76163311575e098d59b7c19fd017c683704119a650ef3853278db208f3ce6f97",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Model package and symbols renamed to ZERITH 2.5; legacy manifest metadata remains accepted.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "14f12167b3c249d9baa2ebfab0d56b704c5f2d95d9e30ef19b552590d837182d"
+    },
+    {
+      "file": "inference/src/zerith_core/models/zerith/policy_reader.py",
+      "source_module": "zvla/models/fam_wam/policy_reader.py",
+      "source_sha256": "18caf24eadfe82912b72db4b4dc0404bc67ba4f5dd58a9b3c5a115289b4b7797",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Model package and symbols renamed to ZERITH 2.5; legacy manifest metadata remains accepted.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "a59f206d9868e71e73528d38e2444be6d551db2ced84d8708bfba69bd3f44547"
+    },
+    {
+      "file": "inference/src/zerith_core/models/zerith/primitives.py",
+      "source_module": "zvla/models/fam_wam/primitives.py",
+      "source_sha256": "73fb50b1a5092f7726b160924db193d3416ca919e116839f3f05b555ba7ef1df",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Model package and symbols renamed to ZERITH 2.5; legacy manifest metadata remains accepted.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "e11d06f95e2778279976083bb6bc6b150f8b2e1736b2987438529902a84a5091"
+    },
+    {
+      "file": "inference/src/zerith_core/models/zerith/teacher.py",
+      "source_module": "zvla/models/fam_wam/teacher.py",
+      "source_sha256": "57ed31cc95ceda12a2c52f8905db698d69ba0c4b5b2412d964f737aa089f4e5c",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Model package and symbols renamed to ZERITH 2.5; legacy manifest metadata remains accepted.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "7aab339d4f59d26e377738638011a911ba6a41b5d89247f6b077ae8a5ebcad45"
+    },
+    {
+      "file": "inference/src/zerith_core/actions/state_trajectory.py",
+      "source_module": "zvla/actions/state_trajectory.py",
+      "source_sha256": "bc955922512b7befbb9fff2abb826c39a931192d471109829e65d90511b859ef",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "f22c262c1ce9e0a92b555485eb2a1897d959f3754092737632801c97dee941ea"
+    },
+    {
+      "file": "inference/src/zerith_core/actions/mixed_native7.py",
+      "source_module": "zvla/actions/mixed_native7.py",
+      "source_sha256": "bf98026f4dff53aef43d2019e47cac6ec7f34cb8afb57f4dd112544a38c3802f",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "95d409098a3575ec75db76ee535243edf5d90ef1928f5fe0bd6e69dbb2e9c28c"
+    },
+    {
+      "file": "inference/src/zerith_core/actions/h1.py",
+      "source_module": "zvla/actions/h1.py",
+      "source_sha256": "2126774fcf0591651b48528ebd58be6ef924eb762311b44091920ebb50b86477",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained. Validate declared hand-pose frame and position/waist units and joint order against the shared H1 deployment contract; unresolved source declarations are rejected without relabeling statistics.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "fe396748c07d5455ccc04817c6b3a8c1e529463b4634529820459fa953d47267"
+    },
+    {
+      "file": "inference/src/zerith_core/vision/schema.py",
+      "source_module": "zvla/vision/schema.py",
+      "source_sha256": "2d45f469a913dac0592164df08d1ecdf24579371ed030ede4facef529f5d0331",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "97a3bd6c7eb1ee7941351d2e5d493e38671a95c82ca6cfc895d4600d4c98143c"
+    },
+    {
+      "file": "inference/src/zerith_core/vision/letterbox.py",
+      "source_module": "zvla/vision/letterbox.py",
+      "source_sha256": "0c69ba662107f5cf89cc900f7bb9008371acd0593f33dc23fc4178f755dda0ce",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "2c93c92d67bc65efd78446334a8593f4647343a5d18660d7b9221fb6ebe08ce2"
+    },
+    {
+      "file": "inference/src/zerith_core/vision/wan_imports.py",
+      "source_module": "zvla/vision/wan_imports.py",
+      "source_sha256": "19be163bab03c4bc62cc10c5649286c0de634e3d23cc525dbe593f556b5fe5f4",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "5a259ca6e19ac1cefca06ce4a2f43c8e4cb7c6929fddf85be5c5b5abe00416d5"
+    },
+    {
+      "file": "inference/src/zerith_core/vision/wan_vae.py",
+      "source_module": "zvla/vision/wan_vae.py",
+      "source_sha256": "8133c0861697670457c5a690ea6dc9a61e189f1dc72c5d314af7a8f23afe323c",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "600108a739ec3b5c7fd6a35fc71c3511b0524df4590bfd45184838c736cba4e5"
+    },
+    {
+      "file": "inference/src/zerith_core/vision/streaming.py",
+      "source_module": "libero/zvla_server.py",
+      "source_sha256": "b9df8165255ab2b73d2c68cf6e6cf6a76aada0fc970e01a3da837fd208cb2a05",
+      "changes": "Inference-only adaptation; package imports updated; training and diagnostic paths excluded; checkpoint parameter names retained.",
+      "license": "Apache-2.0",
+      "distributed_sha256": "b2535891a15992516d658ffd1d8bf4787c80554e9e27041b72d264969c7d6d72"
+    },
+    {
+      "file": "robot/src/zerith/h1/native_ik.py",
+      "source_module": "H1 deployment client supplied by project maintainers",
+      "license": "Apache-2.0",
+      "distributed_sha256": "62d0d6d1b40ee8e28d814502011c7a41ab3ba6e07583fd8a5c758bd6e2142294",
+      "changes": "Python adapter for the external native IK provider. Native solver source and binaries are not distributed."
+    }
+  ]
+}

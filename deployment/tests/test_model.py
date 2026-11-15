@@ -1,0 +1,93 @@
+import pytest
+
+torch = pytest.importorskip("torch")
+from zerith_core.actions.state_trajectory import matrix_to_rotation_6d, rotation_6d_to_matrix
+from zerith_core.models.zerith.config import (
+    LEGACY_TEACHER_ARCHITECTURE_VERSION,
+    ZERITH_TEACHER_ARCHITECTURE_VERSION,
+    ZerithConfig,
+)
+from zerith_core.models.zerith.runtime import ZerithTeacherPolicy
+
+
+def tiny_config():
+    return ZerithConfig.tiny(
+        architecture_version=ZERITH_TEACHER_ARCHITECTURE_VERSION,
+        action_dim=23,
+        state_dim=23,
+        state_trajectory_dim=23,
+        state_trajectory_contract=True,
+        native7_minmax=True,
+        h1_command23=True,
+        state_codec_embodiments=("h1",),
+        action_prediction_steps=16,
+        action_chunk_size=4,
+        use_proprioception=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "architecture_version",
+    [ZERITH_TEACHER_ARCHITECTURE_VERSION, LEGACY_TEACHER_ARCHITECTURE_VERSION],
+    ids=["canonical", "legacy-metadata"],
+)
+def test_no_training_recipe_in_config(architecture_version):
+    config = tiny_config()
+    assert "training_source_names" not in config.as_dict()
+    assert "world_ema_decay" not in config.as_dict()
+    metadata = dict(config.as_dict(), architecture_version=architecture_version)
+    assert ZerithConfig.from_dict(metadata) == config
+
+
+def test_tensor_rotation_contract():
+    r = torch.eye(3).repeat(2, 1, 1)
+    torch.testing.assert_close(rotation_6d_to_matrix(matrix_to_rotation_6d(r)), r)
+
+
+def test_tiny_full_policy_forward_and_reset():
+    torch.set_num_threads(1)
+    torch.manual_seed(7)
+    config = tiny_config()
+    policy = ZerithTeacherPolicy(config).eval()
+    state = torch.zeros(1, 23)
+    state[:, [3, 7, 13, 17]] = 1
+    args = [
+        torch.randn(1, 6, 12, 4),
+        torch.ones(1, 12, 4, dtype=torch.bool),
+        torch.randn(1, 3, 12),
+        torch.tensor([1 / 30]),
+        torch.tensor([4 / 30]),
+        state,
+        torch.ones(1, 23, dtype=torch.bool),
+        torch.tensor([0]),
+    ]
+    kwargs = dict(
+        geometry_features=torch.randn(1, 12, 24), geometry_valid=torch.ones(1, 12, dtype=torch.bool)
+    )
+    policy.reset_inference(42)
+    action, valid = policy.act_state_trajectory(*args, **kwargs)
+    assert action.shape == (1, 16, 23)
+    assert torch.isfinite(action).all() and valid.all()
+    assert policy._runtime.counters["reader_calls"] == config.action_flow_steps
+    policy.reset_inference(42)
+    repeated, _ = policy.act_state_trajectory(*args, **kwargs)
+    torch.testing.assert_close(action, repeated)
+
+
+def test_state_dict_strict_roundtrip():
+    config = tiny_config()
+    policy = ZerithTeacherPolicy(config)
+    clone = ZerithTeacherPolicy(config)
+    clone.load_state_dict(policy.state_dict(), strict=True)
+    assert policy.state_dict().keys() == clone.state_dict().keys()
+
+
+def test_meta_network_cpu_codec_materialization():
+    config = tiny_config()
+    with torch.device("meta"):
+        policy = ZerithTeacherPolicy(config)
+    assert next(policy.parameters()).is_meta
+    assert not policy.state_codec.waist_stat_valid.is_meta
+    original = ZerithTeacherPolicy(config)
+    policy.load_state_dict(original.state_dict(), strict=True, assign=True)
+    assert all(not value.is_meta for value in policy.state_dict().values())

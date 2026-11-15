@@ -1,0 +1,6 @@
+# Source-checkout compatibility files; wheel launchers use packaged modules.
+include requirements.txt
+include requirements-inference.txt
+include environment-client.yml
+include scripts/train.py
+recursive-include configs/posttrain *.py
