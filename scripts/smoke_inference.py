@@ -20,14 +20,14 @@ for relative in ("simulation", "deployment/shared/src", "deployment/inference/sr
     sys.path.insert(0, str(ROOT / relative))
 
 
-def load_policy(target, root, device):
+def load_policy(target, root, device, dtype):
     import torch
 
     if target != "h1":
         from zerith_sim.models.zerith import load_deployment_artifact
 
         policy, manifest = load_deployment_artifact(
-            root, device=device, dtype=torch.float32, verify_weight_sha256=True
+            root, device=device, dtype=dtype, verify_weight_sha256=True
         )
         if manifest["action_schema"]["benchmark"] != target:
             raise ValueError("Artifact benchmark differs from --target")
@@ -110,7 +110,7 @@ def encoder_inputs(args, device):
     text[0, : len(value)] = value
     del encoder, value
     gc.collect()
-    torch.cuda.empty_cache()
+    accelerator(device).empty_cache()
     if args.target == "h1":
         from zerith.contract import CAMERAS
         from zerith_core.vision.schema import CameraProfile
@@ -157,6 +157,13 @@ def encoder_inputs(args, device):
     return encode, reset
 
 
+def accelerator(device):
+    """Return the torch.cuda or torch.xpu module for ``device``."""
+    import torch
+
+    return getattr(torch, device.type)
+
+
 def synthetic_inputs(args, device):
     import torch
 
@@ -182,7 +189,13 @@ def main(argv=None):
         "--target", required=True, choices=("libero-plus", "libero", "metaworld", "h1")
     )
     parser.add_argument("--artifact", type=Path, required=True)
-    parser.add_argument("--device", default="cuda:0")
+    parser.add_argument("--device", default="cuda:0", help="cuda:N or xpu:N")
+    parser.add_argument(
+        "--dtype",
+        choices=("float32", "bfloat16"),
+        default="float32",
+        help="policy dtype; use bfloat16 when FP32 does not fit the GPU",
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--prompt", default="pick up the block")
     parser.add_argument("--output", type=Path, required=True)
@@ -196,12 +209,14 @@ def main(argv=None):
 
     torch.set_num_threads(8)
     device = torch.device(args.device)
-    if device.type != "cuda" or not torch.cuda.is_available():
-        parser.error("A compatible CUDA GPU is required for the full released model")
-    torch.cuda.set_device(device)
+    if device.type not in ("cuda", "xpu") or not accelerator(device).is_available():
+        parser.error("A compatible CUDA or Intel XPU GPU is required for the full released model")
+    if args.target == "h1" and device.type != "cuda":
+        parser.error("The H1 target runs on CUDA only")
+    accelerator(device).set_device(device)
     encode, reset = encoder_inputs(args, device) if all(paths) else synthetic_inputs(args, device)
     print("ENCODERS_READY", flush=True)
-    policy = load_policy(args.target, args.artifact, device)
+    policy = load_policy(args.target, args.artifact, device, getattr(torch, args.dtype))
     print("POLICY_LOADED", flush=True)
     state, valid = state_input(args.target, device)
     dt = {"libero-plus": 0.05, "libero": 0.05, "metaworld": 0.0125, "h1": 1 / 30}[args.target]
@@ -212,7 +227,7 @@ def main(argv=None):
         if len(calls) == 2:
             reset()
             policy.reset_inference(args.seed)
-        torch.cuda.synchronize(device)
+        accelerator(device).synchronize(device)
         start = time.perf_counter()
         with torch.inference_mode():
             latent, spatial, text, geo, gv = encode(index)
@@ -228,7 +243,7 @@ def main(argv=None):
                 geometry_features=geo,
                 geometry_valid=gv,
             )
-        torch.cuda.synchronize(device)
+        accelerator(device).synchronize(device)
         if action.shape != (1, 16, policy.config.action_dim) or mask.shape != action.shape:
             raise AssertionError("Prediction shape differs from predict16 contract")
         if not torch.isfinite(action).all() or not mask[..., :width].all():
@@ -254,11 +269,11 @@ def main(argv=None):
         input_mode="generated_rgb_and_real_encoders"
         if all(paths)
         else "synthetic_encoded_features",
-        precision="float32",
+        precision=args.dtype,
         solver_steps=10,
         calls=calls,
         reset_exact_match=True,
-        peak_gpu_bytes=torch.cuda.max_memory_allocated(device),
+        peak_gpu_bytes=accelerator(device).max_memory_allocated(device),
         simulator_used=False,
         robot_connected=False,
         physical_semantics_verified=False,

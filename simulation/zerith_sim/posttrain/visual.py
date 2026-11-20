@@ -151,7 +151,8 @@ class StreamingVGGTGeometryEncoder:
         ])
         current = torch.from_numpy(current_images).permute(0, 3, 1, 2).float()
         current = current.div(255.0)[None].to(self.device)
-        with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+        with torch.autocast(device_type=current.device.type,
+                            dtype=torch.bfloat16):
             layers, patch_start = self.aggregator(current)
         patches = layers[-1][:, :, patch_start:]
         side = int(patches.shape[2]**0.5)

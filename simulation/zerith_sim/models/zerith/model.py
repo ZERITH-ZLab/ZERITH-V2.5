@@ -310,6 +310,9 @@ class ZerithPolicy(nn.Module):
             self._generator = torch.Generator(
                 device=device if device.type == "cuda" else "cpu")
             self._generator.manual_seed(self._seed)
+        if self._generator.device.type != device.type:
+            return torch.randn(shape, generator=self._generator,
+                               dtype=torch.float32).to(device)
         return torch.randn(shape, generator=self._generator, device=device,
                            dtype=torch.float32)
 

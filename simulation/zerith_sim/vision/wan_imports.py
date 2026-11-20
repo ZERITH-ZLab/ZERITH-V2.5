@@ -17,6 +17,8 @@ import sys
 import threading
 import types
 
+import torch
+
 _NAMESPACE = "_zerith_pinned_wan"
 _IMPORT_LOCK = threading.Lock()
 
@@ -58,7 +60,16 @@ def import_pinned_wan_module(source_repo: str | Path, relative: str):
     with _IMPORT_LOCK:
         _install_namespace(_NAMESPACE, wan_root)
         _install_namespace(f"{_NAMESPACE}.modules", modules_root)
-        return importlib.import_module(f"{_NAMESPACE}.{relative}")
+        if relative != "modules.t5" or torch.cuda.is_available():
+            return importlib.import_module(f"{_NAMESPACE}.{relative}")
+        # Without CUDA (CPU or Intel XPU), let that unused default evaluate;
+        # every caller here passes an explicit device.
+        current_device = torch.cuda.current_device
+        torch.cuda.current_device = lambda: 0
+        try:
+            return importlib.import_module(f"{_NAMESPACE}.{relative}")
+        finally:
+            torch.cuda.current_device = current_device
 
 
 __all__ = ["import_pinned_wan_module"]

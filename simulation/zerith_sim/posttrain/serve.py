@@ -47,6 +47,7 @@ def serve(args):
     if dtype_name not in ('float32', 'bfloat16'):
         raise ValueError(f'Unsupported policy dtype: {dtype_name}')
     device = torch.device(args.device)
+    text_device = torch.device(getattr(args, 'text_device', None) or args.device)
     policy, manifest = load_deployment_artifact(args.artifact, device=device,
                                                dtype=getattr(torch, dtype_name), verify_weight_sha256=True)
     for name, actual in (('action_flow_steps', policy.config.action_flow_steps),
@@ -65,9 +66,9 @@ def serve(args):
         if bases:
             from .prompts import libero_plus_prompt
             prompt = libero_plus_prompt(prompt, bases, adapter['suffix_regex'])
-        text_encoder.model.to(device)
+        text_encoder.model.to(text_device)
         with torch.inference_mode():
-            value = text_encoder([prompt], device)[0]
+            value = text_encoder([prompt], text_device)[0].to(device)
         text_encoder.model.cpu()
         if len(value) > 64:
             raise ValueError('Instruction exceeds the 64-token model context')

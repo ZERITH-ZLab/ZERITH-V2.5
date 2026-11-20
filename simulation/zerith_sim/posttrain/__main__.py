@@ -60,6 +60,8 @@ def main():
     p.add_argument("--dtype", choices=("auto", "float32", "bfloat16"), default="auto",
                    help="auto uses the release inference.json policy_dtype, or float32")
     p.add_argument("--base-instructions", help="JSON list of the 40 standard LIBERO instructions for LIBERO-Plus")
+    p.add_argument("--text-device",
+                   help="device for the UMT5 text encoder (default: --device), for example xpu:1 or cpu when the GPU is too small for both")
     assets(p)
     p = commands.add_parser("eval", help="run the benchmark simulator client")
     p.add_argument("--bench", choices=BENCHMARKS, required=True)
