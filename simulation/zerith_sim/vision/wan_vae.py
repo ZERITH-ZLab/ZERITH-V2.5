@@ -108,7 +108,7 @@ def encode_wan22_vae_camera_windows(
     model.clear_cache()
     try:
         autocast = (
-            torch.amp.autocast("cuda", dtype=vae.dtype)
+            torch.amp.autocast(torch.device(device).type, dtype=vae.dtype)
             if vae.dtype in (torch.float16, torch.bfloat16) else nullcontext())
         with torch.inference_mode(), autocast:
             for latent_start, latent_stop, rgb_start, rgb_stop in bounds:

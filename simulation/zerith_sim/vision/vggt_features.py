@@ -94,7 +94,7 @@ def encode_vggt_views(
         raise ValueError(f"unexpected VGGT RGB shape {value.shape}")
     tensor = torch.from_numpy(value).permute(0, 1, 4, 2, 3).to(
         device=device, dtype=torch.float32, non_blocking=True).div_(255.0)
-    with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+    with torch.autocast(device_type=tensor.device.type, dtype=torch.bfloat16):
         layers, patch_start = aggregator(tensor)
     patches = layers[-1][:, :, patch_start:]
     side = int(patches.shape[2]**0.5)

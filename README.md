@@ -188,6 +188,32 @@ This three-episode example checks closed-loop execution and does not reproduce
 the full benchmark score. See the [complete LIBERO-Plus workflow](docs/simulation/libero-plus.md)
 for full evaluation and training your own policy.
 
+### Run on Intel GPU (XPU)
+
+The released policies also run on Intel GPUs (for example Arc Pro B60)
+with PyTorch for XPU. The FP32 policy does not fit on one Arc Pro B60 card, so load it in
+BF16 with `--dtype bfloat16`; the encoders are unchanged. Install the XPU build
+of PyTorch instead of the CUDA one in step 1:
+
+```bash
+python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/xpu
+python -m pip install -r simulation/requirements-inference.txt
+```
+
+Then start the service of step 4 with `--device xpu:0 --dtype bfloat16
+--text-device cpu` (or `--text-device xpu:1` on a second card), or check
+inference without a simulator:
+
+```bash
+python scripts/smoke_inference.py --target libero --artifact simulation/assets/policies/libero \
+  --device xpu:0 --dtype bfloat16 --output results/smoke-xpu.json \
+  --wan-repo simulation/assets/Wan2.2 --wan-model simulation/assets/Wan2.2-TI2V-5B \
+  --vggt-repo simulation/assets/vggt --vggt-model simulation/assets/VGGT-1B
+```
+
+Training, the optional Hopper FlashAttention-3 kernel, the Triton kernels and
+the H1 robot deployment remain CUDA-only.
+
 ## Simulation Evaluation and Training
 
 Each benchmark has two complete workflows: **evaluate the released checkpoint**,
